@@ -25,12 +25,14 @@ cd ansible
 pip install --requirement requirements.txt
 ```
 
-Rename the example inventory file and replace the placeholder with your VPS's IP address.
+Rename the example inventory file and replace the placeholder (`xxxx`) with your VPS's IP address.
 ```bash
 mv example.inventory.ini inventory.ini
 ```
 
 The `vps-setup` playbook assumes that your public SSH key is already added to the root user's `~/.ssh/authorized_keys` file. Make sure that this is the case.\
+In `ansible.cfg` the default name of the private key is `id_hostinger`. Please update this your your SSH key's name differs.
+
 Next, set the hashed password under `vars` in the `vps-setup.yml` file. [Ansible's guide on generating hashed password](https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module).
 
 The `vps-setup` playbook can be run with the following command:

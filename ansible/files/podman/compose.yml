@@ -2,6 +2,7 @@
 services:
   watchtower:
     image: docker.io/containrrr/watchtower
+    restart: unless-stopped
     command:
       - "--label-enable"
       - "--interval"
@@ -11,6 +12,7 @@ services:
       - /var/run/user/1001/podman/podman.sock:/var/run/docker.sock
   traefik:
     image: docker.io/library/traefik:v3.1
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -22,7 +24,7 @@ services:
     image: ghcr.io/daniel-mizsak/fastapi-app:latest
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi-app.rule=Host(`fastapi.mlops.top`)"
+      - "traefik.http.routers.fastapi-app.rule=Host(`fastapi.mlops.top`) || Host(`mlops.top`)"
       - "traefik.http.routers.fastapi-app.entrypoints=websecure"
       - "traefik.http.routers.fastapi-app.tls.certresolver=production"
       - "com.centurylinklabs.watchtower.enable=true"
