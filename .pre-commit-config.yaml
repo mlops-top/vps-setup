@@ -1,3 +1,4 @@
+---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 
@@ -10,11 +11,12 @@ ci:
 # pre-commit
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
         args: [--maxkb=2000]
       - id: check-merge-conflict
+      - id: check-toml
       - id: check-yaml
         args: [--allow-multiple-documents]
       - id: detect-private-key
@@ -23,6 +25,12 @@ repos:
 
   # gitleaks
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.4
+    rev: v8.23.3
     hooks:
       - id: gitleaks
+
+  # codespell
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell

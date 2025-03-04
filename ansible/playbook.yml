@@ -1,12 +1,13 @@
 ---
-- name: VPS setup
+- name: VPS Setup
   hosts: all
   become: true
   gather_facts: true
-  remote_user: root
+  remote_user: root  # First time run as root
+  # remote_user: ansible  # Later runs as ansible
   vars:
     user_name: ansible
-    user_password: $6$gFBVpKxMq5h.eOGu$oLpalFL21hvgnVpZlTR3V0CwltWRtcmfgscwYpFshYrrBFipuGgZQ6Ij7lwzcBdKgUmAN2J9Q11TgxSyX0M/c/
+    user_password: "{{ lookup('env','HOSTINGER_VPS_PASSWORD') }}"
 
   pre_tasks:
     - name: Update apt package cache
@@ -18,6 +19,11 @@
     - name: Restart sshd
       ansible.builtin.service:
         name: ssh
+        state: restarted
+
+    - name: Restart unattended-upgrades
+      ansible.builtin.service:
+        name: unattended-upgrades
         state: restarted
 
   tasks:
@@ -116,8 +122,46 @@
           - python3-virtualenv
           - tmux
           - tree
+          - unattended-upgrades
           - zip
         state: present
+
+    - name: Unattended upgrades 20auto-upgrades
+      ansible.builtin.lineinfile:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+      loop:
+        - regexp: "^(\/\/)?APT::Periodic::Update-Package-Lists"
+          line: "APT::Periodic::Update-Package-Lists \"1\";"
+
+        - regexp: "^(\/\/)?APT::Periodic::Unattended-Upgrade"
+          line: "APT::Periodic::Unattended-Upgrade \"1\";"
+      notify: Restart unattended-upgrades
+
+    - name: Unattended upgrades 50unattended-upgrades
+      ansible.builtin.lineinfile:
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+      loop:
+        - regexp: "^(\/\/)?Unattended-Upgrade::Remove-Unused-Dependencies "
+          line: "Unattended-Upgrade::Remove-Unused-Dependencies \"true\";"
+
+        - regexp: "^(\/\/)?Unattended-Upgrade::Automatic-Reboot "
+          line: "Unattended-Upgrade::Automatic-Reboot \"true\";"
+
+        - regexp: "^(\/\/)?Unattended-Upgrade::Automatic-Reboot-Time "
+          line: "Unattended-Upgrade::Automatic-Reboot-Time \"04:00\";"
+      notify: Restart unattended-upgrades
+
+    - name: Enable unattended upgrades
+      ansible.builtin.service:
+        name: unattended-upgrades
+        state: started
+        enabled: true
 
     - name: Enable fail2ban
       ansible.builtin.service:
@@ -125,6 +169,37 @@
         state: started
         enabled: true
 
+  # 1Password CLI
+  # TODO: Maybe do the debsig-verify part as well?
+  # https://developer.1password.com/docs/cli/get-started/#step-1-install-1password-cli
+    - name: Add docker repository
+      ansible.builtin.deb822_repository:
+        name: 1password
+        types: [deb]
+        architectures: amd64
+        uris: "https://downloads.1password.com/linux/debian/amd64"
+        signed_by: "https://downloads.1password.com/linux/keys/1password.asc"
+        suites: [stable]
+        components: [main]
+        state: present
+        enabled: true
+
+    - name: Install 1Password CLI
+      ansible.builtin.apt:
+        package:
+          - 1password-cli
+        update_cache: true
+        state: present
+
+    - name: Add 1Password service token
+      ansible.builtin.template:
+        src: 1password/1password.sh.j2
+        dest: /etc/profile.d/1password.sh
+        owner: root
+        group: root
+        mode: "0644"
+
+  # Update system packages
     - name: Update system packages to the latest version
       ansible.builtin.apt:
         upgrade: safe
