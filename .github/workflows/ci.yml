@@ -23,5 +23,6 @@ jobs:
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main
         with:
+          working_directory: ansible
           setup_python: true
-          args: --config-file .github/linters/.ansible-lint.yml
+          args: --strict

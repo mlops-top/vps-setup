@@ -1,6 +1,0 @@
----
-# https://ansible.readthedocs.io/projects/lint/configuring/
-strict: true
-
-mock_modules:
-  - community.general.ufw
