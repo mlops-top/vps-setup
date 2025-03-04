@@ -169,9 +169,9 @@
         state: started
         enabled: true
 
-  # 1Password CLI
-  # TODO: Maybe do the debsig-verify part as well?
-  # https://developer.1password.com/docs/cli/get-started/#step-1-install-1password-cli
+    # 1Password CLI
+    # TODO: Maybe do the debsig-verify part as well?
+    # https://developer.1password.com/docs/cli/get-started/#step-1-install-1password-cli
     - name: Add docker repository
       ansible.builtin.deb822_repository:
         name: 1password
@@ -199,7 +199,7 @@
         group: root
         mode: "0644"
 
-  # Update system packages
+    # Update system packages
     - name: Update system packages to the latest version
       ansible.builtin.apt:
         upgrade: safe

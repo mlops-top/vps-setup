@@ -9,8 +9,10 @@
 
 
 ## Overview
-This repository was inspired by [Learn Linux TV](https://www.youtube.com/@LearnLinuxTV)'s [10 Tips for Hardening your Linux Servers
- ](https://youtu.be/Jnxx_IAC0G4?si=xUs_2m8IjDTGYxl7) and [Dreams of Codes](https://www.youtube.com/@dreamsofcode)'s [Setting up a production ready VPS](https://youtu.be/F-9KWQByeU0?si=v7OE4IBhpqrzaD1R) video.\
+This repository was inspired by the following videos:
+- [10 Tips for Hardening your Linux Servers](https://youtu.be/Jnxx_IAC0G4?si=xUs_2m8IjDTGYxl7)
+- [Setting up a production ready VPS](https://youtu.be/F-9KWQByeU0?si=v7OE4IBhpqrzaD1R)
+
  The hardening recommendations are automated using Ansible.
 
 
@@ -30,11 +32,13 @@ Rename the example inventory file and replace the placeholder (`xxxx`) with your
 mv example.inventory.ini inventory.ini
 ```
 
-The playbook assumes that your public SSH key is already added to the root user's `~/.ssh/authorized_keys` file.\
+The playbook assumes that your public SSH key is already added to the root user's `~/.ssh/authorized_keys` file.
+
+
 In `ansible.cfg` the default name of the private key is `id_hostinger`. Please update this if your SSH key's name differs.
 
 > [!NOTE]
-> The playbook uses 1Password's CLI to retrieve the sudo user's password and the service account token.
+> The playbook uses 1Password's CLI to retrieve the sudo user's password and the service account token.\
 > It is recommended to use some sort of encryption when passing sensitive information.
 
 The `vps-setup` playbook can be run with the following command:
