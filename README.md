@@ -13,7 +13,7 @@ This repository was inspired by the following videos:
 - [10 Tips for Hardening your Linux Servers](https://youtu.be/Jnxx_IAC0G4?si=xUs_2m8IjDTGYxl7)
 - [Setting up a production ready VPS](https://youtu.be/F-9KWQByeU0?si=v7OE4IBhpqrzaD1R)
 
- The hardening recommendations are automated using Ansible.
+ The hardening configurations are automated using Ansible.
 
 
 ## VPS Setup
