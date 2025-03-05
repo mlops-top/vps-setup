@@ -39,7 +39,6 @@
         password: "{{ user_password }}"
         shell: /bin/bash
         groups:
-          - sudo
           - "{{ user_name }}"
         createhome: true
         state: present
@@ -85,9 +84,9 @@
       tags:
         - molecule-notest  # Root user does not have authorized_keys in container.
 
-    - name: Set SSH configurations
+    - name: Set SSH configuration
       ansible.builtin.lineinfile:
-        dest: /etc/ssh/sshd_config
+        path: /etc/ssh/sshd_config
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
         state: present
@@ -111,11 +110,15 @@
       community.general.ufw:
         default: deny
         direction: incoming
+      tags:
+        - molecule-notest
 
     - name: Allow outgoing traffic
       community.general.ufw:
         default: allow
         direction: outgoing
+      tags:
+        - molecule-notest
 
     - name: Allow specific ports
       community.general.ufw:
@@ -125,10 +128,14 @@
         - 22
         - 80
         - 443
+      tags:
+        - molecule-notest
 
     - name: Enable UFW
       community.general.ufw:
         state: enabled
+      tags:
+        - molecule-notest
 
     # Unattended upgrades
     - name: Install unattended-upgrades
@@ -145,7 +152,7 @@
 
     - name: Unattended upgrades 20auto-upgrades
       ansible.builtin.lineinfile:
-        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        path: /etc/apt/apt.conf.d/20auto-upgrades
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
         state: present
@@ -159,7 +166,7 @@
 
     - name: Unattended upgrades 50unattended-upgrades
       ansible.builtin.lineinfile:
-        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        path: /etc/apt/apt.conf.d/50unattended-upgrades
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
         state: present
@@ -222,6 +229,8 @@
         owner: root
         group: root
         mode: "0644"
+      tags:
+        - molecule-notest
 
     # System packages
     - name: Install system packages

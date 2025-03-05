@@ -48,3 +48,13 @@ op run --env-file=".env.enc" -- ansible-playbook playbook.yml
 
 
 It is recommended to reboot the machine after the playbook has finished running.
+
+<hr>
+
+<div align="center">
+    <strong>⭐ Star the repository if you found it useful ⭐</strong>
+    <br>
+    <a href="https://github.com/daniel-mizsak/repository-template" target="_blank">Repository Template</a> |
+    <a href="https://github.com/daniel-mizsak/workflows" target="_blank">Reusable Workflows</a> |
+    <a href="https://github.com/daniel-mizsak/mtjd" target="_blank">Development Environment </a>
+</div>

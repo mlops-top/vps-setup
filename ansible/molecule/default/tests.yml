@@ -1,13 +1,168 @@
 ---
 - name: Run the tests
   hosts: all
-  gather_facts: false
+  gather_facts: true
   become: true
   tasks:
+    # Update ansible facts.
     - name: Gather the apt package facts
       ansible.builtin.package_facts:
         manager: apt
 
+    - name: Gather the system service facts
+      ansible.builtin.service_facts:
+      register: service_facts
+
+    # User
+    - name: Assert system user group exists
+      ansible.builtin.getent:
+        database: group
+        key: "{{ user_name }}"
+
+    - name: Assert system user exists
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ user_name }}"
+
+    - name: Register sudo status of system user
+      ansible.builtin.command: >
+        sudo --list --other-user={{ user_name }}
+      register: sudo_status
+      changed_when: false
+
+    - name: Assert system user has sudo privileges
+      ansible.builtin.assert:
+        that:
+          - "'(ALL) NOPASSWD: ALL' in sudo_status.stdout"
+
+    # SSH
+    - name: Assert SSH is installed
+      ansible.builtin.assert:
+        that:
+          - "'openssh-client' in ansible_facts['packages']"
+          - "'openssh-server' in ansible_facts['packages']"
+
+    - name: Assert SSH is running and enabled
+      ansible.builtin.assert:
+        that:
+          - service_facts["ansible_facts"]["services"]["ssh.service"]["state"] == "running"
+          - service_facts["ansible_facts"]["services"]["ssh.service"]["status"] == "enabled"
+
+    - name: Get stats of SSH directory
+      ansible.builtin.stat:
+        path: /home/{{ user_name }}/.ssh
+      register: ssh_directory
+
+    - name: Assert directory parameters for SSH directory
+      ansible.builtin.assert:
+        that:
+          - ssh_directory.stat.isdir
+          - ssh_directory.stat.pw_name == user_name
+          - ssh_directory.stat.gr_name == user_name
+          - ssh_directory.stat.mode == "0700"
+        fail_msg: "Directory 'SSH directory' is missing or is not set up properly."
+        success_msg: "Directory 'SSH directory' is correctly set up."
+
+    - name: Assert SSH configuration content
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "PermitRootLogin no"
+        - "PasswordAuthentication no"
+      check_mode: true
+      register: ssh_configuration_content
+      failed_when: (ssh_configuration_content is changed) or (ssh_configuration_content is failed)
+
+    # UFW
+    - name: Assert UFW is installed
+      ansible.builtin.assert:
+        that:
+          - "'ufw' in ansible_facts['packages']"
+
+    # Unattended upgrades
+    - name: Assert unattended-upgrades is installed
+      ansible.builtin.assert:
+        that:
+          - "'unattended-upgrades' in ansible_facts['packages']"
+
+    - name: Assert unattended-upgrades is running and enabled
+      ansible.builtin.assert:
+        that:
+          - service_facts["ansible_facts"]["services"]["unattended-upgrades.service"]["state"] == "running"
+          - service_facts["ansible_facts"]["services"]["unattended-upgrades.service"]["status"] == "enabled"
+
+    - name: Assert unattended-upgrades 20auto-upgrades content
+      ansible.builtin.lineinfile:
+        path: /etc/apt/apt.conf.d/20auto-upgrades
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "APT::Periodic::Update-Package-Lists \"1\";"
+        - "APT::Periodic::Unattended-Upgrade \"1\";"
+      check_mode: true
+      register: unattended_upgrades_20auto_upgrades_content
+      failed_when: (unattended_upgrades_20auto_upgrades_content is changed) or
+        (unattended_upgrades_20auto_upgrades_content is failed)
+
+    - name: Assert unattended-upgrades 50unattended-upgrades content
+      ansible.builtin.lineinfile:
+        path: /etc/apt/apt.conf.d/50unattended-upgrades
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "Unattended-Upgrade::Remove-Unused-Dependencies \"true\";"
+        - "Unattended-Upgrade::Automatic-Reboot \"true\";"
+        - "Unattended-Upgrade::Automatic-Reboot-Time \"04:00\";"
+      check_mode: true
+      register: unattended_upgrades_50unattended_upgrades_content
+      failed_when: (unattended_upgrades_50unattended_upgrades_content is changed) or
+        (unattended_upgrades_50unattended_upgrades_content is failed)
+
+    # Fail2ban
+    - name: Assert fail2ban is installed
+      ansible.builtin.assert:
+        that:
+          - "'fail2ban' in ansible_facts['packages']"
+
+    - name: Assert fail2ban is running and enabled
+      ansible.builtin.assert:
+        that:
+          - service_facts["ansible_facts"]["services"]["fail2ban.service"]["state"] == "running"
+          - service_facts["ansible_facts"]["services"]["fail2ban.service"]["status"] == "enabled"
+
+    # 1Password CLI
+    - name: Get stats of 1Password CLI gpg key
+      ansible.builtin.stat:
+        path: /etc/apt/keyrings/1password.asc
+      register: one_password_gpg
+
+    - name: Assert 1Password CLI gpg exists
+      ansible.builtin.assert:
+        that:
+          - one_password_gpg.stat.exists
+        fail_msg: "1Password CLI gpg key is missing or is not set up properly."
+        success_msg: "1Password CLI gpg key is correctly set up."
+
+    - name: Get stats of 1Password CLI repository
+      ansible.builtin.stat:
+        path: /etc/apt/sources.list.d/1password.sources
+      register: one_password_repository
+
+    - name: Assert 1Password CLI repository exists
+      ansible.builtin.assert:
+        that:
+          - one_password_repository.stat.exists
+        fail_msg: "1Password CLI repository is missing or is not set up properly."
+        success_msg: "1Password CLI repository is correctly set up."
+
+    - name: Assert 1Password CLI is installed
+      ansible.builtin.assert:
+        that:
+          - "'1password-cli' in ansible_facts['packages']"
+
+    # System packages
     - name: Assert system packages are installed
       ansible.builtin.assert:
         that:
