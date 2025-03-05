@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run yamllint
-        uses: daniel-mizsak/workflows/.github/actions/yaml-lint@v0.1.0
+        uses: daniel-mizsak/workflows/.github/actions/yaml-lint@v1
 
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main
@@ -28,6 +28,6 @@ jobs:
           args: --strict --config-file ../.github/linters/.ansible-lint.yml
 
       - name: Run molecule
-        uses: daniel-mizsak/workflows/.github/actions/molecule@develop
+        uses: daniel-mizsak/workflows/.github/actions/molecule@v1
         with:
           working_directory: ansible
