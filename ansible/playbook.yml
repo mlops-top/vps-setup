@@ -53,6 +53,19 @@
         validate: "visudo -cf %s"
 
     # SSH
+    - name: Install SSH
+      ansible.builtin.apt:
+        package:
+          - openssh-client
+          - openssh-server
+        state: present
+
+    - name: SSH is started and enabled
+      ansible.builtin.service:
+        name: ssh
+        state: started
+        enabled: true
+
     - name: Create SSH directory
       ansible.builtin.file:
         path: "/home/{{ user_name }}/.ssh"
@@ -69,6 +82,8 @@
         owner: "{{ user_name }}"
         group: "{{ user_name }}"
         mode: "0600"
+      tags:
+        - molecule-notest  # Root user does not have authorized_keys in container.
 
     - name: Set SSH configurations
       ansible.builtin.lineinfile:
@@ -86,6 +101,12 @@
       notify: Restart sshd
 
     # UFW
+    - name: Install UFW
+      ansible.builtin.apt:
+        package:
+          - ufw
+        state: present
+
     - name: Deny incoming traffic
       community.general.ufw:
         default: deny
@@ -109,22 +130,18 @@
       community.general.ufw:
         state: enabled
 
-    # APT
-    - name: Install system packages
+    # Unattended upgrades
+    - name: Install unattended-upgrades
       ansible.builtin.apt:
         package:
-          - build-essential
-          - curl
-          - fail2ban
-          - nmap
-          - python3-kubernetes
-          - python3-pip
-          - python3-virtualenv
-          - tmux
-          - tree
           - unattended-upgrades
-          - zip
         state: present
+
+    - name: Unattended upgrades is started and enabled
+      ansible.builtin.service:
+        name: unattended-upgrades
+        state: started
+        enabled: true
 
     - name: Unattended upgrades 20auto-upgrades
       ansible.builtin.lineinfile:
@@ -157,13 +174,14 @@
           line: "Unattended-Upgrade::Automatic-Reboot-Time \"04:00\";"
       notify: Restart unattended-upgrades
 
-    - name: Enable unattended upgrades
-      ansible.builtin.service:
-        name: unattended-upgrades
-        state: started
-        enabled: true
+    # Fail2ban
+    - name: Install fail2ban
+      ansible.builtin.apt:
+        package:
+          - fail2ban
+        state: present
 
-    - name: Enable fail2ban
+    - name: Fail2ban is started and enabled
       ansible.builtin.service:
         name: fail2ban
         state: started
@@ -172,7 +190,13 @@
     # 1Password CLI
     # TODO: Maybe do the debsig-verify part as well?
     # https://developer.1password.com/docs/cli/get-started/#step-1-install-1password-cli
-    - name: Add docker repository
+    - name: Install 1Password CLI dependencies
+      ansible.builtin.apt:
+        package:
+          - python3-debian
+        state: present
+
+    - name: Add 1Password CLI repository
       ansible.builtin.deb822_repository:
         name: 1password
         types: [deb]
@@ -191,7 +215,7 @@
         update_cache: true
         state: present
 
-    - name: Add 1Password service token
+    - name: Add 1Password CLI service token
       ansible.builtin.template:
         src: 1password/1password.sh.j2
         dest: /etc/profile.d/1password.sh
@@ -199,7 +223,21 @@
         group: root
         mode: "0644"
 
-    # Update system packages
+    # System packages
+    - name: Install system packages
+      ansible.builtin.apt:
+        package:
+          - build-essential
+          - curl
+          - nmap
+          - python3-kubernetes
+          - python3-pip
+          - python3-virtualenv
+          - tmux
+          - tree
+          - zip
+        state: present
+
     - name: Update system packages to the latest version
       ansible.builtin.apt:
         upgrade: safe

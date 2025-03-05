@@ -1,0 +1,19 @@
+---
+- name: Gather the apt package facts
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Assert system packages are installed
+  ansible.builtin.assert:
+    that:
+      - "'{{ item }}' in ansible_facts['packages']"
+  loop:
+    - build-essential
+    - curl
+    - nmap
+    - python3-kubernetes
+    - python3-pip
+    - python3-virtualenv
+    - tmux
+    - tree
+    - zip
