@@ -25,7 +25,7 @@ jobs:
         with:
           working_directory: ansible
           setup_python: true
-          args: --strict
+          args: --strict --config-file ../.github/linters/.ansible-lint.yml
 
       - name: Run molecule
         uses: daniel-mizsak/workflows/.github/actions/molecule@main
