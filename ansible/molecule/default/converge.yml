@@ -13,10 +13,5 @@
 - name: Run the main playbook
   ansible.builtin.import_playbook: ../../playbook.yml
 
-- name: Run the tests
-  hosts: all
-  gather_facts: false
-  become: true
-  tasks:
-    - name: Import tests
-      ansible.builtin.import_tasks: tests.yml
+- name: Run test test playbook
+  ansible.builtin.import_playbook: tests.yml
