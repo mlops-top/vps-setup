@@ -1,3 +1,5 @@
 ---
 user_name: ansible
-user_password: password
+user_password: $6$haTro9TlxMEyJfh4$UcEiMMjm4PkHImdlvODmMQH6SfxeKNOsTgI4EDTG4Rqkg3BwaUyzy9id7L3dUN879H.bR1opTQRfNWvYeF4Zo/
+# Password is: `password`
+# Hashed by: `mkpasswd --method=sha-512`

@@ -4,10 +4,11 @@
   become: true
   gather_facts: true
   remote_user: root  # First time run as root
-  # remote_user: ansible  # Later runs as ansible
+  # remote_user: ansible  # Later run as ansible
   vars:
     user_name: ansible
-    user_password: "{{ lookup('env','HOSTINGER_VPS_PASSWORD') }}"
+    user_password: "{{ lookup('env','VPS_PASSWORD') }}"
+    # https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
 
   pre_tasks:
     - name: Update apt package cache
