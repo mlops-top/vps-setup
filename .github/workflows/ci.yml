@@ -26,3 +26,8 @@ jobs:
           working_directory: ansible
           setup_python: true
           args: --strict
+
+      - name: Run molecule
+        uses: daniel-mizsak/workflows/.github/actions/molecule@main
+        with:
+          working_directory: ansible
