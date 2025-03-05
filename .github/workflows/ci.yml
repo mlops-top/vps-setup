@@ -28,6 +28,6 @@ jobs:
           args: --strict --config-file ../.github/linters/.ansible-lint.yml
 
       - name: Run molecule
-        uses: daniel-mizsak/workflows/.github/actions/molecule@main
+        uses: daniel-mizsak/workflows/.github/actions/molecule@develop
         with:
           working_directory: ansible
