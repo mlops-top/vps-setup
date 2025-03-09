@@ -1,0 +1,47 @@
+---
+- name: Install ssh
+  ansible.builtin.apt:
+    package:
+      - openssh-client
+      - openssh-server
+    state: present
+
+- name: Service ssh is started and enabled
+  ansible.builtin.service:
+    name: ssh
+    state: started
+    enabled: true
+
+- name: Create ssh directory for system user
+  ansible.builtin.file:
+    path: "/home/{{ user_name }}/.ssh"
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0700"
+
+- name: Add authorized ssh key for system user
+  ansible.builtin.copy:
+    remote_src: true
+    src: /root/.ssh/authorized_keys
+    dest: /home/{{ user_name }}/.ssh/authorized_keys
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0600"
+  tags:
+    - molecule-notest  # Root user does not have authorized_keys in container.
+
+- name: Set ssh configuration
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    validate: "sshd -t -f %s"
+  loop:
+    - regexp: "^#?PermitRootLogin"
+      line: "PermitRootLogin no"
+
+    - regexp: "^#?PasswordAuthentication"
+      line: "PasswordAuthentication no"
+  notify: Restart sshd

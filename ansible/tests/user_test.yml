@@ -1,0 +1,21 @@
+---
+- name: Assert system user group exists
+  ansible.builtin.getent:
+    database: group
+    key: "{{ user_name }}"
+
+- name: Assert system user exists
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ user_name }}"
+
+- name: Register sudo status of system user
+  ansible.builtin.command: >
+    sudo --list --other-user={{ user_name }}
+  register: sudo_status
+  changed_when: false
+
+- name: Assert system user has sudo privileges
+  ansible.builtin.assert:
+    that:
+      - "'(ALL) NOPASSWD: ALL' in sudo_status.stdout"

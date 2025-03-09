@@ -1,0 +1,11 @@
+---
+- name: Assert fail2ban is installed
+  ansible.builtin.assert:
+    that:
+      - "'fail2ban' in ansible_facts['packages']"
+
+- name: Assert fail2ban is running and enabled
+  ansible.builtin.assert:
+    that:
+      - service_facts["ansible_facts"]["services"]["fail2ban.service"]["state"] == "running"
+      - service_facts["ansible_facts"]["services"]["fail2ban.service"]["status"] == "enabled"

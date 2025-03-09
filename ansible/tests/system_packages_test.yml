@@ -1,0 +1,12 @@
+---
+- name: Assert system packages are installed
+  ansible.builtin.assert:
+    that:
+      - "'{{ item }}' in ansible_facts['packages']"
+  loop:
+    - build-essential
+    - curl
+    - nmap
+    - tmux
+    - tree
+    - zip

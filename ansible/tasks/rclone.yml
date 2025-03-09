@@ -1,0 +1,48 @@
+---
+- name: Install rclone
+  ansible.builtin.apt:
+    package:
+      - rclone
+    state: present
+
+- name: Create rclone configuration directory
+  ansible.builtin.file:
+    path: /home/{{ user_name }}/.config/rclone
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0700"
+
+- name: Add rclone configuration
+  ansible.builtin.template:
+    src: rclone/rclone.conf.j2
+    dest: /home/{{ user_name }}/.config/rclone/rclone.conf
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0600"
+  tags:
+    - molecule-notest
+
+- name: Create backup directory
+  ansible.builtin.file:
+    path: /backup
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0700"
+
+- name: Install cron
+  ansible.builtin.apt:
+    package:
+      - cron
+    state: present
+
+- name: Create backup cron job
+  ansible.builtin.cron:
+    name: "backup"
+    minute: "0"
+    hour: "3"
+    weekday: "0"  # Sunday
+    job: "rclone sync /backup r2:{{ r2_bucket_name }}/current --backup-dir r2:{{ r2_bucket_name }}/archive/$(date +\"%Y-%m-%d\")"
+    user: "{{ user_name }}"
+    state: present

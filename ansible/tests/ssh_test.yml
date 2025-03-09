@@ -1,0 +1,39 @@
+---
+- name: Assert SSH is installed
+  ansible.builtin.assert:
+    that:
+      - "'openssh-client' in ansible_facts['packages']"
+      - "'openssh-server' in ansible_facts['packages']"
+
+- name: Assert SSH is running and enabled
+  ansible.builtin.assert:
+    that:
+      - service_facts["ansible_facts"]["services"]["ssh.service"]["state"] == "running"
+      - service_facts["ansible_facts"]["services"]["ssh.service"]["status"] == "enabled"
+
+- name: Get stats of SSH directory
+  ansible.builtin.stat:
+    path: /home/{{ user_name }}/.ssh
+  register: ssh_directory
+
+- name: Assert directory parameters for SSH directory
+  ansible.builtin.assert:
+    that:
+      - ssh_directory.stat.isdir
+      - ssh_directory.stat.pw_name == user_name
+      - ssh_directory.stat.gr_name == user_name
+      - ssh_directory.stat.mode == "0700"
+    fail_msg: "Directory 'SSH directory' is missing or is not set up properly."
+    success_msg: "Directory 'SSH directory' is correctly set up."
+
+- name: Assert SSH configuration content
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "PermitRootLogin no"
+    - "PasswordAuthentication no"
+  check_mode: true
+  register: ssh_configuration_content
+  failed_when: (ssh_configuration_content is changed) or (ssh_configuration_content is failed)

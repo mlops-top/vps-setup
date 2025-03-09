@@ -1,0 +1,11 @@
+---
+- name: Run VPS Setup Playbook
+  ansible.builtin.import_playbook: ../../playbook.yml
+  vars:
+    hashed_password: $6$haTro9TlxMEyJfh4$UcEiMMjm4PkHImdlvODmMQH6SfxeKNOsTgI4EDTG4Rqkg3BwaUyzy9id7L3dUN879H.bR1opTQRfNWvYeF4Zo/
+    # https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
+    # Password is: `password`
+    # Hashed by: `mkpasswd --method=sha-512`
+
+- name: Run Test VPS Setup Playbook
+  ansible.builtin.import_playbook: tests.yml

@@ -1,0 +1,15 @@
+---
+- name: Install system packages
+  ansible.builtin.apt:
+    package:
+      - build-essential
+      - curl
+      - nmap
+      - tmux
+      - tree
+      - zip
+    state: present
+
+- name: Update system packages to the latest version
+  ansible.builtin.apt:
+    upgrade: safe

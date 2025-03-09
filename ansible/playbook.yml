@@ -1,0 +1,74 @@
+---
+- name: VPS Setup
+  hosts: all
+  become: true
+  gather_facts: true
+  remote_user: root  # First time run as root
+  # remote_user: ansible  # Later run as ansible
+  vars:
+    user_name: ansible
+    hashed_password: "{{ lookup('env', 'OP_HASHED_PASSWORD') }}"
+    r2_bucket_name: vps
+
+  pre_tasks:
+    - name: Update apt package cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+  handlers:
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+
+    - name: Restart unattended-upgrades
+      ansible.builtin.service:
+        name: unattended-upgrades
+        state: restarted
+
+    - name: Restart netdata
+      ansible.builtin.service:
+        name: netdata
+        state: restarted
+
+  tasks:
+    - name: Import user tasks
+      ansible.builtin.import_tasks:
+        file: tasks/user.yml
+
+    - name: Import ssh tasks
+      ansible.builtin.import_tasks:
+        file: tasks/ssh.yml
+
+    - name: Import ufw tasks
+      ansible.builtin.import_tasks:
+        file: tasks/ufw.yml
+      tags:
+        - molecule-notest
+
+    - name: Import unattended-upgrades tasks
+      ansible.builtin.import_tasks:
+        file: tasks/unattended_upgrades.yml
+
+    - name: Import fail2ban tasks
+      ansible.builtin.import_tasks:
+        file: tasks/fail2ban.yml
+
+    - name: Import 1password-cli tasks
+      ansible.builtin.import_tasks:
+        file: tasks/1password_cli.yml
+
+    - name: Import rclone tasks
+      ansible.builtin.import_tasks:
+        file: tasks/rclone.yml
+
+    - name: Import netdata tasks
+      ansible.builtin.import_tasks:
+        file: tasks/netdata.yml
+      tags:
+        - molecule-notest
+
+    - name: Import system packages tasks
+      ansible.builtin.import_tasks:
+        file: tasks/system_packages.yml

@@ -1,0 +1,12 @@
+---
+- name: Install fail2ban
+  ansible.builtin.apt:
+    package:
+      - fail2ban
+    state: present
+
+- name: Fail2ban is started and enabled
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true

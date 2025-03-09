@@ -1,0 +1,51 @@
+---
+- name: Assert rclone is installed
+  ansible.builtin.assert:
+    that:
+      - "'rclone' in ansible_facts['packages']"
+
+- name: Get stats of rclone configuration directory
+  ansible.builtin.stat:
+    path: /home/{{ user_name }}/.config/rclone
+  register: rclone_configuration_directory
+
+- name: Assert directory parameters for rclone configuration directory
+  ansible.builtin.assert:
+    that:
+      - rclone_configuration_directory.stat.isdir
+      - rclone_configuration_directory.stat.pw_name == user_name
+      - rclone_configuration_directory.stat.gr_name == user_name
+      - rclone_configuration_directory.stat.mode == "0700"
+    fail_msg: "Directory 'rclone configuration directory' is missing or is not set up properly."
+    success_msg: "Directory 'rclone configuration directory' is correctly set up."
+
+- name: Get stats of backup directory
+  ansible.builtin.stat:
+    path: /backup
+  register: backup_directory
+
+- name: Assert directory parameters for backup directory
+  ansible.builtin.assert:
+    that:
+      - backup_directory.stat.isdir
+      - backup_directory.stat.pw_name == user_name
+      - backup_directory.stat.gr_name == user_name
+      - backup_directory.stat.mode == "0700"
+    fail_msg: "Directory 'backup directory' is missing or is not set up properly."
+    success_msg: "Directory 'backup directory' is correctly set up."
+
+- name: Assert cron is installed
+  ansible.builtin.assert:
+    that:
+      - "'cron' in ansible_facts['packages']"
+
+- name: Register crontab status of system user
+  ansible.builtin.command: >
+    crontab -u {{ user_name }} -l
+  register: crontab_status
+  changed_when: false
+
+- name: Assert system user has backup cron job
+  ansible.builtin.assert:
+    that:
+      - "'0 3 * * 0 rclone sync /backup r2:vps/current --backup-dir r2:vps/archive' in crontab_status.stdout"

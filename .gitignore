@@ -1,0 +1,18 @@
+# Project
+.ansible
+ansible/inventory.ini
+
+.terraform
+*.tfstate
+
+# System
+.DS_Store
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# IDE
+.vscode/

@@ -1,0 +1,7 @@
+[r2]
+type = s3
+provider = Cloudflare
+access_key_id = {{ lookup('env', 'OP_ACCESS_KEY_ID') }}
+secret_access_key = {{ lookup('env', 'OP_SECRET_ACCESS_KEY') }}
+endpoint = https://{{ lookup('env', 'OP_ACCOUNT_ID') }}.r2.cloudflarestorage.com
+acl = private

@@ -1,0 +1,32 @@
+---
+- name: Download netdata installation script
+  ansible.builtin.get_url:
+    url: https://get.netdata.cloud/kickstart.sh
+    dest: /tmp/netdata-kickstart.sh
+    mode: '0700'
+  changed_when: false
+
+- name: Run netdata installation script
+  ansible.builtin.command: >
+    /tmp/netdata-kickstart.sh
+    --non-interactive
+    --stable-channel
+    --disable-telemetry
+    --claim-token {{ lookup('env', 'OP_CLAIM_TOKEN') }}
+  args:
+    creates: /usr/sbin/netdata
+
+- name: Service netdata is started and enabled
+  ansible.builtin.service:
+    name: netdata
+    state: started
+    enabled: true
+
+- name: Add netdata configuration
+  ansible.builtin.copy:
+    src: netdata/netdata.conf
+    dest: /etc/netdata/netdata.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart netdata

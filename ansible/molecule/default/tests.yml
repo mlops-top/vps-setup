@@ -1,0 +1,46 @@
+---
+- name: Test VPS Setup
+  hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    user_name: ansible
+    r2_bucket_name: vps
+
+  tasks:
+    # Update ansible facts.
+    - name: Gather the apt package facts
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Gather the system service facts
+      ansible.builtin.service_facts:
+      register: service_facts
+
+    - name: Import user tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/user_test.yml
+
+    - name: Import ssh tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/ssh_test.yml
+
+    - name: Import unattended-upgrades tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/unattended_upgrades_test.yml
+
+    - name: Import fail2ban tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/fail2ban_test.yml
+
+    - name: Import 1password-cli tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/1password_cli_test.yml
+
+    - name: Import rclone tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/rclone_test.yml
+
+    - name: Import system packages tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/system_packages_test.yml
