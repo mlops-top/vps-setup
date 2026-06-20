@@ -1,0 +1,30 @@
+---
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "0 12 * * 6" # Every Saturday at 12:00
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prek:
+    permissions:
+      contents: read
+    uses: daniel-mizsak/workflows/.github/workflows/prek.yml@29c63fa152beada07401cef3c08da69178f0bfc7 # v2.2.1
+
+  lint:
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: daniel-mizsak/workflows/.github/workflows/lint.yml@29c63fa152beada07401cef3c08da69178f0bfc7 # v2.2.1
+    with:
+      megalinter-config: "./.github/linters/.megalinter.yml"

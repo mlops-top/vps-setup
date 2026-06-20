@@ -1,0 +1,14 @@
+# Project
+
+# System
+.DS_Store
+
+# Development files
+megalinter-reports
+
+# Environments
+.env
+.venv
+
+# IDE
+.vscode
