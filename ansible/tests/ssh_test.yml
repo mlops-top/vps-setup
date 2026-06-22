@@ -1,0 +1,53 @@
+---
+- name: Assert ssh is installed
+  ansible.builtin.assert:
+    that:
+      - "'openssh-client' in ansible_facts['packages']"
+      - "'openssh-server' in ansible_facts['packages']"
+
+- name: Assert ssh is running and enabled
+  ansible.builtin.assert:
+    that:
+      - service_facts["ansible_facts"]["services"]["ssh.service"]["state"] == "running"
+      - service_facts["ansible_facts"]["services"]["ssh.service"]["status"] == "enabled"
+
+- name: Get stats of ssh directory
+  ansible.builtin.stat:
+    path: /home/{{ user_name }}/.ssh
+  register: ssh_directory
+
+- name: Assert directory parameters for ssh directory
+  ansible.builtin.assert:
+    that:
+      - ssh_directory.stat.isdir
+      - ssh_directory.stat.pw_name == user_name
+      - ssh_directory.stat.gr_name == user_name
+      - ssh_directory.stat.mode == "0700"
+
+- name: Read authorized ssh keys of system user
+  ansible.builtin.slurp:
+    src: "/home/{{ user_name }}/.ssh/authorized_keys"
+  register: authorized_keys
+
+- name: Assert authorized ssh keys content
+  ansible.builtin.assert:
+    that:
+      - (authorized_keys.content | b64decode | trim) == (public_ssh_key | trim)
+
+- name: Register effective sshd configuration
+  # Parses the merged on-disk configuration, including all sshd_config.d fragments.
+  ansible.builtin.command: >
+    sshd -T
+  register: sshd_configuration
+  changed_when: false
+
+- name: Assert effective sshd configuration
+  ansible.builtin.assert:
+    that:
+      - item in sshd_configuration.stdout_lines
+  loop:
+    - "permitrootlogin no"
+    - "passwordauthentication no"
+    - "kbdinteractiveauthentication no"
+    - "allowusers {{ user_name }}@100.64.0.0/10"
+    - "allowusers {{ user_name }}@fd7a:115c:a1e0::/48"

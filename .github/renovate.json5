@@ -5,10 +5,16 @@
     "config:recommended",
     "helpers:pinGitHubActionDigests",
     ":configMigration",
+    ":pinDevDependencies",
     "abandonments:recommended",
   ],
 
-  enabledManagers: ["github-actions", "pre-commit"],
+  enabledManagers: ["github-actions", "pep621", "pre-commit"],
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ["* 0-5 1 * *"], // First day of the month before 6am.
+    minimumReleaseAge: null, // Handled by uv in pyproject.toml.
+  },
   "pre-commit": {
     enabled: true,
   },
@@ -52,6 +58,11 @@
       matchPackageNames: ["daniel-mizsak/workflows"],
       minimumReleaseAge: null,
       schedule: ["* 0-5 * * *"], // Daily before 6am.
+    },
+    // Group pep621 dependencies in a single PR.
+    {
+      groupName: "Dependencies for pep621",
+      matchManagers: ["pep621"],
     },
     // Group pre-commit dependencies in a single PR.
     {

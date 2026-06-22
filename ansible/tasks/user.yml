@@ -1,0 +1,25 @@
+---
+- name: Create system user group
+  ansible.builtin.group:
+    name: "{{ user_name }}"
+    state: present
+  no_log: true
+
+- name: Create system user
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    group: "{{ user_name }}"
+    password: "{{ hashed_password }}"
+    shell: /bin/bash
+    createhome: true
+    state: present
+  no_log: true
+
+- name: Add sudo privileges for user
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ user_name }}"
+    content: "{{ user_name }} ALL=(ALL) NOPASSWD:ALL\n"
+    owner: root
+    group: root
+    mode: "0440"
+    validate: "visudo -csf %s"

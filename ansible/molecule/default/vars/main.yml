@@ -1,0 +1,4 @@
+---
+# Password is: `password`
+hashed_password: "$6$K7URQuKvqwvRCXBE$oDWjUCFcQRn6AeN6qQCccVRs8oNf.ug5OpJdsSqfgR0fcHhLpkTJHoi2N4ACLdDQZtZXOeFhwPXOdWs56UVsy/"
+public_ssh_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOitrcRJye2d5iUX2IlTCgo5ZxvVAlHqzRsqO/jnRBLj molecule@example.invalid

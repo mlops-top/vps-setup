@@ -1,6 +1,10 @@
 ---
 extends: default
 
+ignore: |
+  .venv
+  megalinter-reports
+
 rules:
   comments:
     min-spaces-from-content: 1

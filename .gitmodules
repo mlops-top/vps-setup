@@ -1,0 +1,5 @@
+[submodule "vps-setup-private"]
+	path = vps-setup-private
+	url = git@github.com:mlops-top/vps-setup-private.git
+	branch = main
+	ignore = dirty

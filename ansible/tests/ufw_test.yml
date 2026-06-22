@@ -1,0 +1,35 @@
+---
+- name: Assert ufw is installed
+  ansible.builtin.assert:
+    that:
+      - "'ufw' in ansible_facts['packages']"
+
+- name: Assert ufw is enabled
+  ansible.builtin.assert:
+    that:
+      - service_facts["ansible_facts"]["services"]["ufw.service"]["status"] == "enabled"
+      # No running assert as ufw.service is a oneshot unit (active "exited")
+
+- name: Get ufw status
+  ansible.builtin.command: >
+    ufw status verbose
+  register: ufw_status
+  changed_when: false
+
+- name: Assert ufw is active with the expected default policy
+  ansible.builtin.assert:
+    that:
+      - item in ufw_status.stdout
+  loop:
+    - "Status: active"
+    - "Default: deny (incoming), allow (outgoing)"
+
+- name: Assert allowed incoming traffic
+  ansible.builtin.assert:
+    that:
+      # regex_replace(' +', ' ') collapses ufw's column padding to single spaces.
+      - item in (ufw_status.stdout | regex_replace(' +', ' '))
+  loop:
+    - "80/tcp ALLOW IN Anywhere"
+    - "443/tcp ALLOW IN Anywhere"
+    - "Anywhere on tailscale0 ALLOW IN Anywhere"

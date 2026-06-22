@@ -1,0 +1,46 @@
+---
+- name: Test VPS Setup
+  hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    user_name: ansible
+
+  tasks:
+    # Update ansible facts
+    - name: Gather the apt package facts
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Gather the system service facts
+      ansible.builtin.service_facts:
+      register: service_facts
+
+    # Import tests
+    - name: Import user tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/user_test.yml
+
+    - name: Import tailscale tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/tailscale_test.yml
+
+    - name: Import ssh tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/ssh_test.yml
+
+    - name: Import ufw tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/ufw_test.yml
+
+    - name: Import unattended-upgrades tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/unattended_upgrades_test.yml
+
+    - name: Import netdata tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/netdata_test.yml
+
+    - name: Import system packages tests
+      ansible.builtin.import_tasks:
+        file: ../../tests/system_packages_test.yml

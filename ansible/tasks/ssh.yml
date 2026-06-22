@@ -1,0 +1,38 @@
+---
+- name: Install ssh
+  ansible.builtin.apt:
+    package:
+      - openssh-client
+      - openssh-server
+    state: present
+
+- name: Service ssh is started and enabled
+  ansible.builtin.service:
+    name: ssh
+    state: started
+    enabled: true
+
+- name: Create ssh directory for system user
+  ansible.builtin.file:
+    path: "/home/{{ user_name }}/.ssh"
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0700"
+
+- name: Add authorized ssh key for system user
+  ansible.posix.authorized_key:
+    user: "{{ user_name }}"
+    key: "{{ public_ssh_key }}"
+    exclusive: true
+    state: present
+
+- name: Set ssh configuration
+  ansible.builtin.template:
+    src: ssh/00-vps-setup.conf.j2
+    dest: /etc/ssh/sshd_config.d/00-vps-setup.conf
+    owner: root
+    group: root
+    mode: "0644"
+    validate: "sshd -t -f %s"
+  notify: Restart sshd

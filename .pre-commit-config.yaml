@@ -4,9 +4,6 @@
 
 # See https://prek.j178.dev to learn about prek
 
-# TODO: Move to prek.toml once renovate supports it:
-# https://github.com/renovatebot/renovate/pull/42254
-
 # exclude: ""
 
 # pre-commit

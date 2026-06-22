@@ -1,0 +1,17 @@
+---
+# Special testing environment can be configured as "include_vars" has the priority over
+# "vars_files" used in the main playbook, so testing variables will not be overwritten.
+
+- name: Configure testing environment
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Overwrite variables
+      ansible.builtin.include_vars:
+        file: vars/main.yml
+
+- name: Run VPS Setup Playbook
+  ansible.builtin.import_playbook: ../../playbook.yml
+
+- name: Run Test VPS Setup Playbook
+  ansible.builtin.import_playbook: tests.yml

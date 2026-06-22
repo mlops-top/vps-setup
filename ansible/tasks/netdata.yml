@@ -1,0 +1,57 @@
+---
+- name: Add netdata repository
+  ansible.builtin.deb822_repository:
+    name: netdata
+    types: [deb]
+    uris: https://repository.netdata.cloud/repos/stable/ubuntu/
+    suites: ["{{ ansible_facts['distribution_release'] | lower }}/"]
+    components: []
+    signed_by: https://repository.netdata.cloud/netdatabot.gpg.key
+    by_hash: true
+    enabled: true
+    state: present
+
+- name: Install netdata
+  ansible.builtin.apt:
+    package:
+      - netdata
+    update_cache: true
+    state: present
+
+- name: Disable netdata anonymous telemetry
+  ansible.builtin.file:
+    path: /etc/netdata/.opt-out-from-anonymous-statistics
+    state: touch
+    owner: root
+    group: root
+    mode: "0644"
+    modification_time: preserve
+    access_time: preserve
+  notify: Restart netdata
+
+- name: Service netdata is started and enabled
+  ansible.builtin.service:
+    name: netdata
+    state: started
+    enabled: true
+
+- name: Add netdata configuration
+  ansible.builtin.template:
+    src: netdata/netdata.conf.j2
+    dest: /etc/netdata/netdata.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart netdata
+
+- name: Add netdata cloud claim configuration
+  ansible.builtin.template:
+    src: netdata/claim.conf.j2
+    dest: /etc/netdata/claim.conf
+    owner: root
+    group: netdata
+    mode: "0640"
+  no_log: true
+  notify: Restart netdata
+  tags:
+    - molecule-notest

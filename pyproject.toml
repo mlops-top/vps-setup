@@ -1,0 +1,20 @@
+# Project Metadata
+[project]
+  name = "vps-setup"
+  version = "0.0.0"
+  description = "Setting up a virtual private server."
+  authors = [{ name = "Daniel Mizsak", email = "daniel@mizsak.com" }]
+  requires-python = ">=3.14"
+  dependencies = ["ansible==14.0.0"]
+
+[dependency-groups]
+  dev = [
+    "ansible-lint==26.4.0",
+    "molecule==26.4.0",
+    "molecule-plugins[docker]==25.8.12",
+    "prek==0.4.4",
+  ]
+
+[tool.uv]
+  package = false
+  exclude-newer = "1 week"

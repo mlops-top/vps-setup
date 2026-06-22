@@ -4,8 +4,6 @@
 
 DISABLE:
   - SPELL
-DISABLE_ERRORS_LINTERS:
-  - REPOSITORY_OSV_SCANNER
 
 FLAVOR_SUGGESTIONS: false
 GITHUB_COMMENT_REPORTER: true
@@ -13,5 +11,12 @@ SECURITY_SUGGESTIONS: false
 SHOW_ELAPSED_TIME: true
 VALIDATE_ALL_CODEBASE: true
 
+ANSIBLE_ANSIBLE_LINT_CONFIG_FILE: .github/linters/.ansible-lint.yml
+ANSIBLE_ANSIBLE_LINT_PRE_COMMANDS:
+  - command: ansible-galaxy collection install --requirements-file ./ansible/requirements.yml
+    cwd: "workspace"
+    run_before_linters: true
 MARKDOWN_MARKDOWNLINT_FILTER_REGEX_EXCLUDE: (^\.github/PULL_REQUEST_TEMPLATE\.md$)
+# Disable: https://docs.kics.io/latest/queries/ansible-queries/c6473dae-8477-4119-88b7-b909b435ce7b/
+REPOSITORY_KICS_ARGUMENTS: --exclude-queries c6473dae-8477-4119-88b7-b909b435ce7b
 YAML_YAMLLINT_ARGUMENTS: --strict

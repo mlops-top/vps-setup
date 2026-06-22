@@ -1,9 +1,13 @@
 # Project
+.env.op
+ansible/inventory.initial.ini
+ansible/inventory.provision.ini
 
 # System
 .DS_Store
 
 # Development files
+.ansible
 megalinter-reports
 
 # Environments

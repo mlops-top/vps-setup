@@ -1,0 +1,58 @@
+---
+- name: Get stats of netdata gpg key
+  ansible.builtin.stat:
+    path: /etc/apt/keyrings/netdata.asc
+  register: netdata_gpg
+
+- name: Assert netdata gpg exists
+  ansible.builtin.assert:
+    that:
+      - netdata_gpg.stat.exists
+
+- name: Get stats of netdata repository
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/netdata.sources
+  register: netdata_repository
+
+- name: Assert netdata repository exists
+  ansible.builtin.assert:
+    that:
+      - netdata_repository.stat.exists
+
+- name: Assert netdata is installed
+  ansible.builtin.assert:
+    that:
+      - "'netdata' in ansible_facts['packages']"
+
+- name: Assert netdata is running and enabled
+  ansible.builtin.assert:
+    that:
+      - service_facts["ansible_facts"]["services"]["netdata.service"]["state"] == "running"
+      - service_facts["ansible_facts"]["services"]["netdata.service"]["status"] == "enabled"
+
+- name: Get stats of netdata telemetry opt-out file
+  ansible.builtin.stat:
+    path: /etc/netdata/.opt-out-from-anonymous-statistics
+  register: netdata_telemetry_opt_out
+
+- name: Assert netdata telemetry opt-out file exists
+  ansible.builtin.assert:
+    that:
+      - netdata_telemetry_opt_out.stat.exists
+      - netdata_telemetry_opt_out.stat.pw_name == "root"
+      - netdata_telemetry_opt_out.stat.gr_name == "root"
+      - netdata_telemetry_opt_out.stat.mode == "0644"
+
+- name: Assert netdata configuration content
+  ansible.builtin.lineinfile:
+    path: /etc/netdata/netdata.conf
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "[global]"
+    - "    hostname = {{ inventory_hostname }}"
+    - "[web]"
+    - "    mode = none"
+  check_mode: true
+  register: netdata_configuration_content
+  failed_when: (netdata_configuration_content is changed) or (netdata_configuration_content is failed)

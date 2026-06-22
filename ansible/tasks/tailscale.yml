@@ -1,0 +1,53 @@
+---
+# Documentation:
+#   - https://tailscale.com/download/linux/ubuntu-2604
+
+- name: Get dpkg architecture
+  ansible.builtin.command: >
+    dpkg --print-architecture
+  register: dpkg_architecture
+  changed_when: false
+
+- name: Add tailscale repository
+  ansible.builtin.deb822_repository:
+    name: tailscale
+    types: [deb]
+    architectures: "{{ dpkg_architecture.stdout }}"
+    uris: "https://pkgs.tailscale.com/stable/ubuntu"
+    signed_by: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_facts['distribution_release'] | lower }}.noarmor.gpg"
+    suites: ["{{ ansible_facts['distribution_release'] | lower }}"]
+    components: [main]
+    state: present
+    enabled: true
+
+- name: Install tailscale
+  ansible.builtin.apt:
+    package:
+      - tailscale
+    update_cache: true
+    state: present
+
+- name: Service tailscale is started and enabled
+  ansible.builtin.service:
+    name: tailscaled
+    state: started
+    enabled: true
+
+- name: Get tailscale status
+  ansible.builtin.command: >
+    tailscale status --json
+  register: tailscale_status
+  changed_when: false
+
+- name: Parse tailscale status
+  ansible.builtin.set_fact:
+    tailscale_is_online: "{{ (tailscale_status.stdout | from_json).Self.Online }}"
+
+- name: Run tailscale up
+  ansible.builtin.command: >
+    tailscale up --auth-key={{ tailscale_auth_key }}
+  when: not tailscale_is_online
+  changed_when: true
+  no_log: true
+  tags:
+    - molecule-notest

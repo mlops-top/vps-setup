@@ -1,0 +1,8 @@
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+
+# Allow logins only from tailnet source addresses.
+# https://til.simonwillison.net/tailscale/lock-down-sshd
+AllowUsers {{ user_name }}@100.64.0.0/10
+AllowUsers {{ user_name }}@fd7a:115c:a1e0::/48
