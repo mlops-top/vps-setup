@@ -5,7 +5,7 @@
   description = "Setting up a virtual private server."
   authors = [{ name = "Daniel Mizsak", email = "daniel@mizsak.com" }]
   requires-python = ">=3.14"
-  dependencies = ["ansible==14.0.0"]
+  dependencies = ["ansible==14.1.0"]
 
 [dependency-groups]
   dev = [
