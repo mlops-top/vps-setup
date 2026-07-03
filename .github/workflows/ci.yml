@@ -19,13 +19,13 @@ jobs:
   prek:
     permissions:
       contents: read
-    uses: daniel-mizsak/workflows/.github/workflows/prek.yml@29c63fa152beada07401cef3c08da69178f0bfc7 # v2.2.1
+    uses: daniel-mizsak/workflows/.github/workflows/prek.yml@31499185a34723e78c51d951b98941c07e139780 # v2.3.0
 
   lint:
     permissions:
       contents: read
       pull-requests: write
-    uses: daniel-mizsak/workflows/.github/workflows/lint.yml@29c63fa152beada07401cef3c08da69178f0bfc7 # v2.2.1
+    uses: daniel-mizsak/workflows/.github/workflows/lint.yml@31499185a34723e78c51d951b98941c07e139780 # v2.3.0
     with:
       megalinter-config: "./.github/linters/.megalinter.yml"
 
@@ -40,7 +40,7 @@ jobs:
           persist-credentials: false
 
       - name: Install just
-        uses: daniel-mizsak/workflows/.github/actions/setup-just@29c63fa152beada07401cef3c08da69178f0bfc7 # v2.2.1
+        uses: daniel-mizsak/workflows/.github/actions/setup-just@31499185a34723e78c51d951b98941c07e139780 # v2.3.0
 
       - name: Run quality checks with just
         run: |
