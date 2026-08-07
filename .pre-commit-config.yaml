@@ -30,7 +30,7 @@ repos:
 
   # zizmor
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: e3eebf65325ccc992422292cb7a4baee967cf815 # frozen: v1.26.1
+    rev: 067260dc5fe6ea86b7551bfd6f8b3ba4e6c93129 # frozen: v1.28.0
     hooks:
       - id: zizmor
 
@@ -41,14 +41,14 @@ repos:
       - id: yamllint
         args: [--config-file=.github/linters/.yamllint.yml, --strict]
 
-  # gitleaks
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: 83d9cd684c87d95d656c1458ef04895a7f1cbd8e # frozen: v8.30.1
+  # betterleaks
+  - repo: https://github.com/betterleaks/betterleaks
+    rev: d56727e7f87a55a6fb2b34fb22cf49618c381929 # frozen: v1.7.1
     hooks:
-      - id: gitleaks
+      - id: betterleaks
 
   # codespell
   - repo: https://github.com/codespell-project/codespell
-    rev: 2ccb47ff45ad361a21071a7eedda4c37e6ae8c5a # frozen: v2.4.2
+    rev: 57b21406f092110c18776e39b0bda50d37c945c8 # frozen: v2.4.3
     hooks:
       - id: codespell
