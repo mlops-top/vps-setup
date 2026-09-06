@@ -30,7 +30,7 @@ repos:
 
   # zizmor
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: 451b56af716f9f0d0c2b816503a3fd0cf8b036fa # frozen: v1.29.0
+    rev: cef8b8350da46d8114c7e6b7272aebdccdf193ce # frozen: v1.30.0
     hooks:
       - id: zizmor
 
@@ -43,7 +43,7 @@ repos:
 
   # betterleaks
   - repo: https://github.com/betterleaks/betterleaks
-    rev: c8a37504060dcd9ae51fb477219d8341f0e2669d # frozen: v1.8.0
+    rev: 5eab48332cc48565864514e3bc6de89df091a7c4 # frozen: v1.8.1
     hooks:
       - id: betterleaks
 
