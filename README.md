@@ -61,6 +61,7 @@ The initial run connects over the public ip as `root`, while the provision run c
 Update the `ansible_host`, `ansible_user` and `ansible_ssh_private_key_file` variables in each file accordingly.
 
 Consider also setting the system `hostname` at the vps provider's panel so that tailscale can use it.
+Make sure that the tailscale auth key is not expired, as the maximum lifetime is 90 days.
 
 The `vps-setup` playbook can be run with the following command:
 
