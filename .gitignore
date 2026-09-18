@@ -8,11 +8,11 @@ ansible/inventory.provision.ini
 
 # Development files
 .ansible
-megalinter-reports
+megalinter-reports/
 
 # Environments
 .env
-.venv
+.venv/
 
 # IDE
-.vscode
+.vscode/

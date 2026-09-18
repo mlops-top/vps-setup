@@ -11,12 +11,14 @@ SECURITY_SUGGESTIONS: false
 SHOW_ELAPSED_TIME: true
 VALIDATE_ALL_CODEBASE: true
 
+# TODO: Remove once actionlint supports $/ references (https://github.com/rhysd/actionlint/issues/711).
+ACTION_ACTIONLINT_ARGUMENTS: >-
+  -ignore '^reusable workflow call "\$/\.github/workflows/ci\.yml" at "uses" is not following the format'
+ACTION_ZIZMOR_DISABLE_ERRORS: true # TODO: Remove this once the zizmor version is updated in MegaLinter.
 ANSIBLE_ANSIBLE_LINT_CONFIG_FILE: .github/linters/.ansible-lint.yml
 ANSIBLE_ANSIBLE_LINT_PRE_COMMANDS:
   - command: ansible-galaxy collection install --requirements-file ./ansible/requirements.yml
     cwd: "workspace"
     run_before_linters: true
 MARKDOWN_MARKDOWNLINT_FILTER_REGEX_EXCLUDE: (^\.github/PULL_REQUEST_TEMPLATE\.md$)
-# Disable: https://docs.kics.io/latest/queries/ansible-queries/c6473dae-8477-4119-88b7-b909b435ce7b/
-REPOSITORY_KICS_ARGUMENTS: --exclude-queries c6473dae-8477-4119-88b7-b909b435ce7b
 YAML_YAMLLINT_ARGUMENTS: --strict
