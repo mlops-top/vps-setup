@@ -9,10 +9,10 @@
 
 [dependency-groups]
   dev = [
-    "ansible-lint==26.8.0",
-    "molecule==26.8.0",
-    "molecule-plugins[docker]==26.7.15",
-    "prek==0.5.2",
+    "ansible-lint==26.9.0",
+    "molecule==26.9.0",
+    "molecule-plugins[docker]==26.9.28",
+    "prek==0.5.4",
   ]
 
 [tool.uv]
