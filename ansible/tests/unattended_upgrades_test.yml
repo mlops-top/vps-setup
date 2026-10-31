@@ -10,29 +10,20 @@
       - service_facts["ansible_facts"]["services"]["unattended-upgrades.service"]["state"] == "running"
       - service_facts["ansible_facts"]["services"]["unattended-upgrades.service"]["status"] == "enabled"
 
-- name: Assert unattended-upgrades 20auto-upgrades content
-  ansible.builtin.lineinfile:
-    path: /etc/apt/apt.conf.d/20auto-upgrades
-    line: "{{ item }}"
-    state: present
+- name: Register effective apt configuration
+  # Includes overrides from all apt.conf.d fragments and apt.conf.
+  ansible.builtin.command: >
+    apt-config dump
+  register: apt_configuration
+  changed_when: false
+
+- name: Assert effective unattended-upgrades configuration
+  ansible.builtin.assert:
+    that:
+      - item in apt_configuration.stdout_lines
   loop:
     - 'APT::Periodic::Update-Package-Lists "1";'
     - 'APT::Periodic::Unattended-Upgrade "1";'
-  check_mode: true
-  register: unattended_upgrades_20auto_upgrades_content
-  failed_when: (unattended_upgrades_20auto_upgrades_content is changed) or
-    (unattended_upgrades_20auto_upgrades_content is failed)
-
-- name: Assert unattended-upgrades 50unattended-upgrades content
-  ansible.builtin.lineinfile:
-    path: /etc/apt/apt.conf.d/50unattended-upgrades
-    line: "{{ item }}"
-    state: present
-  loop:
     - 'Unattended-Upgrade::Remove-Unused-Dependencies "true";'
     - 'Unattended-Upgrade::Automatic-Reboot "true";'
     - 'Unattended-Upgrade::Automatic-Reboot-Time "07:30";'
-  check_mode: true
-  register: unattended_upgrades_50unattended_upgrades_content
-  failed_when: (unattended_upgrades_50unattended_upgrades_content is changed) or
-    (unattended_upgrades_50unattended_upgrades_content is failed)

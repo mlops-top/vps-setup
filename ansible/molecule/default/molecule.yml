@@ -5,18 +5,23 @@
 
 dependency:
   name: galaxy
+
 driver:
   name: docker
+
 platforms:
   - name: instance
-    image: "geerlingguy/docker-ubuntu2604-ansible:latest"
-    command: ""
+    image: "geerlingguy/docker-ubuntu2604-ansible:latest@sha256:7ff4660dab4c9b05b7f41b419937331c864500a585eabca681ff059d2830817a"
+    override_command: false
+    keep_volumes: false
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+
 provisioner:
   name: ansible
+
 verifier:
   name: ansible

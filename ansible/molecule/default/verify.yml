@@ -5,6 +5,8 @@
   become: true
   vars:
     user_name: ansible
+  vars_files:
+    - vars/main.yml
 
   tasks:
     # Update ansible facts

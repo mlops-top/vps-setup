@@ -44,15 +44,14 @@
       - netdata_telemetry_opt_out.stat.mode == "0644"
 
 - name: Assert netdata configuration content
-  ansible.builtin.lineinfile:
-    path: /etc/netdata/netdata.conf
-    line: "{{ item }}"
-    state: present
-  loop:
-    - "[global]"
-    - "    hostname = {{ inventory_hostname }}"
-    - "[web]"
-    - "    mode = none"
+  # Keep this expected fixture independent of the production template.
+  ansible.builtin.template:
+    src: expected/netdata.conf.j2
+    dest: /etc/netdata/netdata.conf
+    owner: root
+    group: root
+    mode: "0644"
   check_mode: true
+  diff: true
   register: netdata_configuration_content
   failed_when: (netdata_configuration_content is changed) or (netdata_configuration_content is failed)
