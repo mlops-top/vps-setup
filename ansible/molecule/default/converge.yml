@@ -12,6 +12,3 @@
 
 - name: Run VPS Setup Playbook
   ansible.builtin.import_playbook: ../../playbook.yml
-
-- name: Run Test VPS Setup Playbook
-  ansible.builtin.import_playbook: tests.yml

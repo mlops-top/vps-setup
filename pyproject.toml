@@ -3,16 +3,16 @@
   name = "vps-setup"
   version = "0.0.0"
   description = "Setting up a virtual private server."
+  requires-python = "==3.14.8"
   authors = [{ name = "Daniel Mizsak", email = "daniel@mizsak.com" }]
-  requires-python = ">=3.14"
-  dependencies = ["ansible==14.4.0"]
+  dependencies = ["ansible==14.5.0"]
 
 [dependency-groups]
   dev = [
-    "ansible-lint==26.9.0",
-    "molecule==26.9.0",
-    "molecule-plugins[docker]==26.9.28",
-    "prek==0.5.4",
+    "ansible-lint==26.10.1",
+    "molecule==26.10.0",
+    "molecule-plugins[docker]==26.10.12",
+    "prek==0.5.7",
   ]
 
 [tool.uv]
