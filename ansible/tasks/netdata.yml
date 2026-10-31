@@ -11,12 +11,15 @@
     enabled: true
     state: present
 
-- name: Install netdata
+# Explicitly update netdata so dependency changes can remove superseded plugins.
+- name: Install or update netdata to the latest version # noqa: package-latest
   ansible.builtin.apt:
     package:
       - netdata
     update_cache: true
-    state: present
+    state: latest
+  tags:
+    - molecule-idempotence-notest # Available versions can change between runs.
 
 - name: Disable netdata anonymous telemetry
   ansible.builtin.file:
