@@ -64,6 +64,12 @@
       groupName: "Dependencies for pep621",
       matchManagers: ["pep621"],
     },
+    // Keep the Python version managed manually.
+    {
+      matchManagers: ["pep621"],
+      matchDepTypes: ["requires-python"],
+      enabled: false,
+    },
     // Group pre-commit dependencies in a single PR.
     {
       groupName: "Dependencies for pre-commit",
